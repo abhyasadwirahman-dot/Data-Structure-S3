@@ -1,0 +1,48 @@
+ANGKA = "0123456789ABCDEF"
+
+
+def konv(n, m):
+  if not 2 <= m <= len(ANGKA):
+    raise ValueError(f"Basis harus antara 2 dan {len(ANGKA)}")
+  if n < 0:
+    return "-" + konv(-n, m)
+  if n < m:
+    return ANGKA[n]
+  return konv(n // m, m) + ANGKA[n % m]
+
+
+def ke_desimal(angka, basis_asal):
+  if not 2 <= basis_asal <= len(ANGKA):
+    raise ValueError(f"Basis harus antara 2 dan {len(ANGKA)}")
+  if not angka:
+    raise ValueError("Angka tidak boleh kosong")
+
+  angka = angka.upper()
+  if angka[0] == "-":
+    return -ke_desimal(angka[1:], basis_asal)
+  digit = ANGKA.find(angka[-1])
+  if digit < 0 or digit >= basis_asal:
+    raise ValueError(f"Digit {angka[-1]} tidak valid untuk basis {basis_asal}")
+  if len(angka) == 1:
+    return digit
+  return ke_desimal(angka[:-1], basis_asal) * basis_asal + digit
+
+
+def konversi(angka, basis_asal, basis_tujuan):
+  return konv(ke_desimal(angka, basis_asal), basis_tujuan)
+
+
+def tampilkan_semua_basis(angka, basis_asal):
+  nilai_desimal = ke_desimal(angka, basis_asal)
+  print(f"\n{angka.upper()} (basis {basis_asal}) dalam basis lain:")
+  for basis_tujuan in range(2, len(ANGKA) + 1):
+    print(f"Basis {basis_tujuan:2}: {konv(nilai_desimal, basis_tujuan)}")
+
+
+if __name__ == "__main__":
+  angka = input("Masukkan angka: ").strip()
+  try:
+    basis_asal = int(input(f"Masukkan basis asal (2-{len(ANGKA)}): "))
+    tampilkan_semua_basis(angka, basis_asal)
+  except ValueError as error:
+    print(f"Input tidak valid: {error}")
